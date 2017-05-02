@@ -9,8 +9,7 @@ let passport      = require('passport');
 let localStrategy = require('passport-local').Strategy;
 
 let users         = require('./routes/users');
-let accounts      = require('./routes/accounts');
-let advisors      = require('./routes/advisors');
+let images        = require('./routes/images');
 let admin         = require('./routes/admin');
 
 let config = require('./config');
@@ -48,8 +47,6 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.use('/api/user', users);
-app.use('/api/account', accounts);
-app.use('/api/advisor', advisors);
 app.use('/api/admin', admin);
 
 // catch 404 and forward to error handler

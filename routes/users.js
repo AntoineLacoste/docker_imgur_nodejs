@@ -105,4 +105,31 @@ router.post('/:userId', verify.verifyToken, function(req, res) {
     });
 });
 
+router.post('/shared/:imageId', verify.verifyToken, function(req, res) {
+    Image.findOne({'_id': req.params.imageId}).then(function (image) {
+        image.shared = true;
+        image.save(function (err, image) {
+            res.status(200).json({status: 200, message: "image successfully shared"});
+        })
+    }, function (err) {
+        console.log(err);
+    });
+
+    upload(req, res, function (err) {
+        if(err){
+            res.status(500).json({status: 500, message: "Wrong image", user: user});
+        }
+
+        const image = new Image({
+            path: req.file.path,
+            shared: false
+        });
+
+        image.save(function (err, image) {
+            res.status(200).json({status: 200, message: "image successfully uploaded"});
+        });
+
+    });
+});
+
 module.exports = router;
