@@ -43,4 +43,29 @@ router.get('/:imageId', verify.verifyImageGet, function(req, res) {
     });
 });
 
+router.post('/', verify.verifyToken, function(req, res) {
+
+    upload(req, res, function (err) {
+        if(err){
+            res.status(500).json({status: 500, message: "Wrong image", user: user});
+        }
+
+        const image = new Image({
+            path: req.file.path,
+            shared: false
+        });
+
+        image.save(function (err, image) {
+            User.findOne({'_id': req.decoded._id}).then(function (user) {
+                user.images.push(image._id);
+                user.save(function (err, user) {
+                    res.status(200).json({status: 200, message: "image successfully uploaded"});
+                })
+            }, function (err) {
+
+            });
+        });
+    });
+});
+
 module.exports = router;

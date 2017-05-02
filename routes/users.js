@@ -86,24 +86,6 @@ router.put('/:username', verify.verifyToken, function (req, res, next) {
     });
 });
 
-router.post('/:userId', verify.verifyToken, function(req, res) {
-
-    upload(req, res, function (err) {
-        if(err){
-            res.status(500).json({status: 500, message: "Wrong image", user: user});
-        }
-
-        const image = new Image({
-            path: req.file.path,
-            shared: false
-        });
-
-        image.save(function (err, image) {
-            res.status(200).json({status: 200, message: "image successfully uploaded"});
-        });
-    });
-});
-
 router.post('/shared/:imageId', verify.verifyToken, function(req, res) {
     Image.findOne({'_id': req.params.imageId}).then(function (image) {
         image.shared = true;
