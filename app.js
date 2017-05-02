@@ -47,6 +47,7 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.use('/api/user', users);
+app.use('/api/images', images);
 app.use('/api/admin', admin);
 
 // catch 404 and forward to error handler

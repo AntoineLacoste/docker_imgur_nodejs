@@ -30,7 +30,7 @@ const upload = multer({
     }
 }).single('picture');
 
-router.get('/:imageId', verify.verifyToken, function(req, res) {
+router.get('/:imageId', verify.verifyImageGet, function(req, res) {
     Image.findOne({'_id': req.params.imageId}).then(function (image) {
         image.shared = true;
         if(image.shared)

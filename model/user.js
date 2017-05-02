@@ -1,7 +1,6 @@
 let mongoose              = require('mongoose');
 let Schema                = mongoose.Schema;
 let passportLocalMongoose = require('passport-local-mongoose');
-let Account               = require('./account');
 
 let User = new Schema({
     mail: {
@@ -36,7 +35,6 @@ userModel.find({}).then(
                 firstname: 'Sebouninet',
                 lastname: 'Foray',
                 username: 'miniForay',
-                advised: [],
                 role: 'customer'
             }), 'azerty', function () {});
 

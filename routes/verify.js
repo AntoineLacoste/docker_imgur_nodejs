@@ -41,3 +41,17 @@ exports.verifyAdmin = function(req, res, next) {
         res.status(401).json({status: 401, message: "Unauthorized"});
     }
 };
+
+exports.verifyImageGet = function (req, res, next) {
+    Image.findOne({'_id': req.params.imageId}).then(function (image) {
+        if(req.decoded._doc.images.contains === image._id)
+            next();
+
+        if(image.shared)
+            next();
+
+        res.status(401).json({status: 401, message: "Unauthorized"});
+    }, function (err) {
+
+    });
+};

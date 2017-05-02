@@ -31,7 +31,7 @@ const upload = multer({
 }).single('picture');
 
 router.get('/:username', verify.verifyToken, function(req, res) {
-    User.findOne({'username': req.params.username}).populate('images').then(function (user) {
+    User.findOne({'username': req.params.username}).then(function (user) {
         res.status(200).json({status: 200, user: user});
     }, function (err) {
         console.log(err);
@@ -101,7 +101,6 @@ router.post('/:userId', verify.verifyToken, function(req, res) {
         image.save(function (err, image) {
             res.status(200).json({status: 200, message: "image successfully uploaded"});
         });
-
     });
 });
 
