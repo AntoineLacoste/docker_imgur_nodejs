@@ -47,7 +47,7 @@ router.post('/', verify.verifyToken, function(req, res) {
 
     upload(req, res, function (err) {
         if(err){
-            res.status(500).json({status: 500, message: "Wrong image", user: user});
+            res.status(500).json({status: 500, message: "Wrong image"});
         }
 
         const image = new Image({
