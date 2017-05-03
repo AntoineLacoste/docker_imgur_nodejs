@@ -4,6 +4,7 @@ const User     = require('../model/user');
 const passport = require('passport');
 const verify   = require('./verify');
 const multer   = require('multer');
+const crypto   = require("crypto");
 const Image    = require('../model/image');
 
 const DIR = '../public/uploads/';
