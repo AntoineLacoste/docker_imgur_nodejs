@@ -6,9 +6,30 @@ const verify   = require('./verify');
 const multer   = require('multer');
 const Image    = require('../model/image');
 
-const DIR = 'public/uploads';
+const DIR = '../public/uploads/';
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, DIR);
+    },
+    filename: function (req, file, cb) {
+        crypto.pseudoRandomBytes(16, function (err, raw) {
+            cb(err, raw.toString('hex') + '.' + mime.extension(file.mimetype));
+        });
+    }
+});
 
-const upload = multer({dest: DIR});
+const upload = multer({
+    storage: storage,
+    fileFilter: function (req, file, cb) {
+        console.log(file.mimetype.split('/')[0]);
+        if (file.mimetype.split('/')[0] === 'image') {
+            cb(null, true);
+        }
+        else {
+            cb(new Error('Wrong file type'));
+        }
+    }
+});
 
 router.get('/:imageId', verify.verifyImageGet, function(req, res) {
     Image.findOne({'_id': req.params.imageId}).then(function (image) {
@@ -23,30 +44,30 @@ router.get('/:imageId', verify.verifyImageGet, function(req, res) {
     });
 });
 
-router.post('/', verify.verifyToken, function(req, res) {
+router.post('/', verify.verifyToken, upload.any(), function(req, res) {
 
-    upload(req, res, function (err) {
-        if(err){
-            res.status(500).json({status: 500, message: "Wrong image"});
-        }
-
-        console.log(req.file);
-        const image = new Image({
-            path: req.file.path,
-            shared: false
-        });
-
-        image.save(function (err, image) {
-            User.findOne({'_id': req.decoded._id}).then(function (user) {
-                user.images.push(image._id);
-                user.save(function (err, user) {
-                    res.status(200).json({status: 200, message: "image successfully uploaded"});
-                })
-            }, function (err) {
-
-            });
-        });
-    });
+    console.log(req.file);
+    // upload(req, res, function (err) {
+    //     if(err){
+    //         res.status(500).json({status: 500, message: "Wrong image"});
+    //     }
+    //
+    //     const image = new Image({
+    //         path: req.file.path,
+    //         shared: false
+    //     });
+    //
+    //     image.save(function (err, image) {
+    //         User.findOne({'_id': req.decoded._id}).then(function (user) {
+    //             user.images.push(image._id);
+    //             user.save(function (err, user) {
+    //                 res.status(200).json({status: 200, message: "image successfully uploaded"});
+    //             })
+    //         }, function (err) {
+    //
+    //         });
+    //     });
+    // });
 });
 
 module.exports = router;

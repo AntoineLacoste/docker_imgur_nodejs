@@ -7,7 +7,6 @@ let bodyParser    = require('body-parser');
 let mongoose      = require('mongoose');
 let passport      = require('passport');
 let localStrategy = require('passport-local').Strategy;
-let multer        = require('multer');
 
 let users         = require('./routes/users');
 let images        = require('./routes/images');
@@ -39,19 +38,6 @@ app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, x-access-token");
     next();
 });
-
-app.use(multer({
-    dest: 'public/uploads',
-    rename: function (fieldname, filename) {
-        return filename + Date.now();
-    },
-    onFileUploadStart: function (file) {
-        console.log(file.originalname + ' is starting ...');
-    },
-    onFileUploadComplete: function (file) {
-        console.log(file.fieldname + ' uploaded to  ' + file.path);
-    }
-}).any());
 
 // passport config
 let User = require('./model/user');
