@@ -7,6 +7,7 @@ let bodyParser    = require('body-parser');
 let mongoose      = require('mongoose');
 let passport      = require('passport');
 let localStrategy = require('passport-local').Strategy;
+let multer        = require('multer');
 
 let users         = require('./routes/users');
 let images        = require('./routes/images');
@@ -40,12 +41,9 @@ app.use(function(req, res, next) {
 });
 
 app.use(multer({
-    dest: DIR,
+    dest: 'public/uploads',
     rename: function (fieldname, filename) {
-        console.log(filename);
-        // crypto.pseudoRandomBytes(16, function (err, raw) {
-        //     cb(err, raw.toString('hex') + '.' + mime.extension(file.mimetype));
-        // });
+        return filename + Date.now();
     },
     onFileUploadStart: function (file) {
         console.log(file.originalname + ' is starting ...');
@@ -53,7 +51,7 @@ app.use(multer({
     onFileUploadComplete: function (file) {
         console.log(file.fieldname + ' uploaded to  ' + file.path);
     }
-}));
+}).any());
 
 // passport config
 let User = require('./model/user');
