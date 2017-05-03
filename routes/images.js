@@ -8,30 +8,20 @@ const crypto   = require("crypto");
 const mime     = require('mime');
 const Image    = require('../model/image');
 
-const DIR = '../public/uploads/';
+const DIR = 'public/uploads/';
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, DIR);
+        cb(null, DIR)
     },
     filename: function (req, file, cb) {
         crypto.pseudoRandomBytes(16, function (err, raw) {
-            cb(err, raw.toString('hex') + '.' + mime.extension(file.mimetype));
+            cb(null, raw.toString('hex') + Date.now() + '.' + file.originalname);
         });
     }
 });
 
-const upload = multer({
-    storage: storage,
-    fileFilter: function (req, file, cb) {
-        console.log(file.mimetype.split('/')[0]);
-        if (file.mimetype.split('/')[0] === 'image') {
-            cb(null, true);
-        }
-        else {
-            cb(new Error('Wrong file type'));
-        }
-    }
-});
+const upload = multer({storage: storage});
 
 router.get('/:imageId', verify.verifyImageGet, function(req, res) {
     Image.findOne({'_id': req.params.imageId}).then(function (image) {
@@ -48,28 +38,24 @@ router.get('/:imageId', verify.verifyImageGet, function(req, res) {
 
 router.post('/', verify.verifyToken, upload.any(), function(req, res) {
 
-    console.log(req.file);
-    // upload(req, res, function (err) {
-    //     if(err){
-    //         res.status(500).json({status: 500, message: "Wrong image"});
-    //     }
-    //
-    //     const image = new Image({
-    //         path: req.file.path,
-    //         shared: false
-    //     });
-    //
-    //     image.save(function (err, image) {
-    //         User.findOne({'_id': req.decoded._id}).then(function (user) {
-    //             user.images.push(image._id);
-    //             user.save(function (err, user) {
-    //                 res.status(200).json({status: 200, message: "image successfully uploaded"});
-    //             })
-    //         }, function (err) {
-    //
-    //         });
-    //     });
-    // });
+    console.log(req);
+    res.end(req.files[0].filename);
+
+    const image = new Image({
+        path: req.files[0].path,
+        shared: false
+    });
+
+    image.save(function (err, image) {
+        User.findOne({'_id': req.decoded._id}).then(function (user) {
+            user.images.push(image._id);
+            user.save(function (err, user) {
+                res.status(200).json({status: 200, message: "image successfully uploaded"});
+            })
+        }, function (err) {
+
+        });
+    });
 });
 
 module.exports = router;
