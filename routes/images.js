@@ -10,22 +10,6 @@ const DIR = 'public/uploads';
 
 const upload = multer({dest: DIR});
 
-app.use(multer({
-    dest: DIR,
-    rename: function (fieldname, filename) {
-        console.log(filename);
-        // crypto.pseudoRandomBytes(16, function (err, raw) {
-        //     cb(err, raw.toString('hex') + '.' + mime.extension(file.mimetype));
-        // });
-    },
-    onFileUploadStart: function (file) {
-        console.log(file.originalname + ' is starting ...');
-    },
-    onFileUploadComplete: function (file) {
-        console.log(file.fieldname + ' uploaded to  ' + file.path);
-    }
-}));
-
 router.get('/:imageId', verify.verifyImageGet, function(req, res) {
     Image.findOne({'_id': req.params.imageId}).then(function (image) {
         image.shared = true;
