@@ -21,7 +21,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage: storage});
 
-router.get('/:imageId', verify.verifyToken, verify.verifyImageGet, function(req, res) {
+router.get('/:imageId/:token', verify.verifyToken, verify.verifyImageGet, function(req, res) {
     Image.findOne({'_id': req.params.imageId}).then(function (image) {
         res.sendFile(image.path);
     }, function (err) {
