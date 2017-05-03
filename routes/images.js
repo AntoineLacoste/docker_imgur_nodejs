@@ -15,9 +15,7 @@ const storage = multer.diskStorage({
         cb(null, DIR)
     },
     filename: function (req, file, cb) {
-        crypto.pseudoRandomBytes(16, function (err, raw) {
-            cb(null, raw.toString('hex') + Date.now() + '.' + file.originalname);
-        });
+        cb(null, file.originalname + "." + mime.extension(file.mimetype));
     }
 });
 
@@ -37,17 +35,13 @@ router.get('/:imageId', verify.verifyImageGet, function(req, res) {
 });
 
 router.post('/', verify.verifyToken, upload.any(), function(req, res) {
-
-    console.log(req);
-    res.end(req.files[0].filename);
-
     const image = new Image({
         path: req.files[0].path,
         shared: false
     });
 
     image.save(function (err, image) {
-        User.findOne({'_id': req.decoded._id}).then(function (user) {
+        User.findOne({'_id': req.decoded._doc._id}).then(function (user) {
             user.images.push(image._id);
             user.save(function (err, user) {
                 res.status(200).json({status: 200, message: "image successfully uploaded"});
