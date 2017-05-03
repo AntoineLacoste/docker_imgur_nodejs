@@ -6,29 +6,25 @@ const verify   = require('./verify');
 const multer   = require('multer');
 const Image    = require('../model/image');
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'public/uploads');
-    },
-    filename: function (req, file, cb) {
-        crypto.pseudoRandomBytes(16, function (err, raw) {
-            cb(err, raw.toString('hex') + '.' + mime.extension(file.mimetype));
-        });
-    }
-});
+const DIR = 'public/uploads';
 
-const upload = multer({
-    storage: storage,
-    fileFilter: function (req, file, cb) {
-        console.log(file.mimetype.split('/')[0]);
-        if (file.mimetype.split('/')[0] === 'image') {
-            cb(null, true);
-        }
-        else {
-            cb(new Error('Wrong file type'));
-        }
+const upload = multer({dest: DIR});
+
+app.use(multer({
+    dest: DIR,
+    rename: function (fieldname, filename) {
+        console.log(filename);
+        // crypto.pseudoRandomBytes(16, function (err, raw) {
+        //     cb(err, raw.toString('hex') + '.' + mime.extension(file.mimetype));
+        // });
+    },
+    onFileUploadStart: function (file) {
+        console.log(file.originalname + ' is starting ...');
+    },
+    onFileUploadComplete: function (file) {
+        console.log(file.fieldname + ' uploaded to  ' + file.path);
     }
-}).single('picture');
+}));
 
 router.get('/:imageId', verify.verifyImageGet, function(req, res) {
     Image.findOne({'_id': req.params.imageId}).then(function (image) {
@@ -50,6 +46,7 @@ router.post('/', verify.verifyToken, function(req, res) {
             res.status(500).json({status: 500, message: "Wrong image"});
         }
 
+        console.log(req.file);
         const image = new Image({
             path: req.file.path,
             shared: false
