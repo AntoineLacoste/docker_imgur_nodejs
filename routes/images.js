@@ -23,12 +23,7 @@ const upload = multer({storage: storage});
 
 router.get('/:imageId', verify.verifyToken, verify.verifyImageGet, function(req, res) {
     Image.findOne({'_id': req.params.imageId}).then(function (image) {
-        image.shared = true;
-        if(image.shared)
-            res.sendFile(image.path);
-        else
-            res.status(401).json({status: 401, message: "Private image"});
-
+        res.sendFile(image.path);
     }, function (err) {
         console.log(err);
     });
