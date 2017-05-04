@@ -68,7 +68,7 @@ router.post('/register', function(req, res) {
 });
 
 router.put('/:username', verify.verifyToken, function (req, res, next) {
-    User.findOne({'username' : req.params.username}).then(function (user) {
+    User.findOne({'username' : req.params.username}).populate("images").then(function (user) {
         if(req.body.mail)      user.mail      = req.body.mail;
         if(req.body.firstname) user.firstname = req.body.firstname;
         if(req.body.lastname)  user.lastname  = req.body.lastname;
