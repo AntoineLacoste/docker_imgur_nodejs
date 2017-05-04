@@ -1,5 +1,6 @@
 let jwt     = require('jsonwebtoken');
 let config  = require('../config');
+let Image   = require('../model/image');
 
 exports.getToken = function(user) {
     return jwt.sign(user, config.secretKey);
@@ -44,11 +45,11 @@ exports.verifyAdmin = function(req, res, next) {
 
 exports.verifyImageGet = function (req, res, next) {
     Image.findOne({'_id': req.params.imageId}).then(function (image) {
-        if(req.decoded._doc.images.contains === image._id)
-            next();
+        if(req.decoded._doc.images.indexOf(image._id.toString()) > 0)
+            return next();
 
         if(image.shared)
-            next();
+            return next();
 
         res.status(401).json({status: 401, message: "Unauthorized"});
     }, function (err) {

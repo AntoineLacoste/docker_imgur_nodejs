@@ -15,7 +15,7 @@ const storage = multer.diskStorage({
         cb(null, DIR)
     },
     filename: function (req, file, cb) {
-        cb(null, file.originalname + "." + mime.extension(file.mimetype));
+        cb(null, file.originalname);
     }
 });
 
@@ -23,7 +23,7 @@ const upload = multer({storage: storage});
 
 router.get('/:imageId/:token', verify.verifyToken, verify.verifyImageGet, function(req, res) {
     Image.findOne({'_id': req.params.imageId}).then(function (image) {
-        res.sendFile(image.path);
+        res.status(200).message({path: image.path});
     }, function (err) {
         console.log(err);
     });
