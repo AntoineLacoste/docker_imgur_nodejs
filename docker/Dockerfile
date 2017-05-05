@@ -1,4 +1,4 @@
-FROM debian:unstable
+FROM ubuntu:14.04
 
 MAINTAINER Etienne Tr
 
