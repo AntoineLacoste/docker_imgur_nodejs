@@ -21,12 +21,12 @@ router.delete('/image/:imageId', verify.verifyToken, verify.verifyImageDelete, f
 });
 
 router.delete('/user/:userId', verify.verifyToken, verify.verifyAdmin, function (req, res) {
-    User.findOne({'_id': req.params.imageId}).then(function (user) {
-        user.remove().then(function (err, user) {
+    User.findOneAndRemove({'_id': req.params.userId}).then(function (user) {
+        // user.remove().then(function (err, user) {
             res.status(200).json({status: 200, message: 'User successfully removed'});
-        }, function (err) {
-            console.log(err);
-        });
+        // }, function (err) {
+        //     console.log(err);
+        // });
     }, function (err) {
         console.log(err);
     })
