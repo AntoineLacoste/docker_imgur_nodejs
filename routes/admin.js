@@ -5,9 +5,7 @@ const Image       = require('../model/image');
 const verify      = require('./verify');
 
 router.get('/all', verify.verifyToken, verify.verifyAdmin, function (req, res) {
-    console.log('mabite');
     User.find({'role': 'customer'}).populate('images').then(function (users) {
-        console.log(users);
         res.status(200).json({status: 200, users: users});
     }, function (err) {
         console.log(err);
