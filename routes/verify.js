@@ -34,7 +34,6 @@ exports.verifyCustomer = function(req, res, next) {
 };
 
 exports.verifyAdmin = function(req, res, next) {
-    console.log(req.decoded._doc);
     if(req.decoded._doc.role === 'admin'){
         next();
     }
