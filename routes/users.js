@@ -3,32 +3,7 @@ const router   = express.Router();
 const User     = require('../model/user');
 const passport = require('passport');
 const verify   = require('./verify');
-const multer   = require('multer');
 const Image    = require('../model/image');
-
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'public/uploads');
-    },
-    filename: function (req, file, cb) {
-        crypto.pseudoRandomBytes(16, function (err, raw) {
-            cb(err, raw.toString('hex') + '.' + mime.extension(file.mimetype));
-        });
-    }
-});
-
-const upload = multer({
-    storage: storage,
-    fileFilter: function (req, file, cb) {
-        console.log(file.mimetype.split('/')[0]);
-        if (file.mimetype.split('/')[0] === 'image') {
-            cb(null, true);
-        }
-        else {
-            cb(new Error('Wrong file type'));
-        }
-    }
-}).single('picture');
 
 router.get('/:username', verify.verifyToken, function(req, res) {
     User.findOne({'username': req.params.username}).populate("images").then(function (user) {
@@ -36,6 +11,19 @@ router.get('/:username', verify.verifyToken, function(req, res) {
     }, function (err) {
         console.log(err);
     });
+});
+
+router.post('/login', function (req, res, next) {
+    passport.authenticate('local', function (err, user, info) {
+        req.logIn(user, function (err) {
+            if(err){
+                res.status(401).json({status: 401, message: "Username or password invalid"});
+                return;
+            }
+            let token = verify.getToken(user);
+            res.status(200).json({status: 200, message: "Authorized", username: user.username, role: user.role, token: token});
+        })
+    })(req, res, next);
 });
 
 router.post('/login', function (req, res, next) {

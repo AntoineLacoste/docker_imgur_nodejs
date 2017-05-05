@@ -43,12 +43,12 @@ exports.verifyAdmin = function(req, res, next) {
     }
 };
 
-exports.verifyImageGet = function (req, res, next) {
+exports.verifyImageDelete = function (req, res, next) {
     Image.findOne({'_id': req.params.imageId}).then(function (image) {
         if(req.decoded._doc.images.indexOf(image._id.toString()) > 0)
             return next();
 
-        if(image.shared)
+        if(req.decoded._doc.role = 'admin')
             return next();
 
         res.status(401).json({status: 401, message: "Unauthorized"});
