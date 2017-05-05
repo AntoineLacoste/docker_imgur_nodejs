@@ -2,13 +2,11 @@ FROM debian:unstable
 
 MAINTAINER Etienne Tr
 
-#NODE
 RUN apt-get update
 
-RUN apt-get install -y nodejs npm git
-
-# symlink node to nodejs
-RUN ln /usr/bin/nodejs /usr/bin/node
+#git & node
+RUN apt-get -y install git \
+	&& apt-get -y install curl && curl -sL https://deb.nodesource.com/setup_6.x | bash - && apt-get install -y nodejs
 
 #mongodb
 RUN sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10 \
